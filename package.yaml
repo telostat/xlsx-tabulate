@@ -1,0 +1,40 @@
+name:               xlsx-tabulate
+version:            0.0.0.0
+github:             "telostat/xlsx-tabulate"
+license:            MIT
+author:             "Vehbi Sinan Tunalioglu"
+maintainer:         "vst@vsthost.com"
+copyright:          "Copyright (c) 2021 Telostat Pte Ltd"
+
+description:        Please see the README on GitHub at <https://github.com/telostat/xlsx-tabulate#readme>
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+dependencies:
+- base >= 4.11 && < 5
+- bytestring
+- lens
+- scientific
+- text
+- time
+- unordered-containers
+- xlsx
+
+library:
+  source-dirs:      src
+  ghc-options:
+  - -Wall
+  default-extensions:
+  - OverloadedStrings
+
+tests:
+  xlsx-tabulate-doctest:
+    main:           doctest.hs
+    source-dirs:    test
+    ghc-options:
+    - -threaded
+    dependencies:
+    - xlsx-tabulate
+    - doctest
