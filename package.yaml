@@ -30,6 +30,14 @@ library:
   - OverloadedStrings
 
 tests:
+  xlsx-tabulate-test:
+    main:           Main.hs
+    source-dirs:    test
+    ghc-options:
+    - -threaded
+    dependencies:
+    - xlsx-tabulate
+
   xlsx-tabulate-doctest:
     main:           doctest.hs
     source-dirs:    test
