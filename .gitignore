@@ -21,4 +21,4 @@ cabal.project.local~
 cabal.sandbox.config
 dist
 dist-*
-test/output.xlsx
+test/output_*.xlsx

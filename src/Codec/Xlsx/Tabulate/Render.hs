@@ -1,66 +1,25 @@
 {-# LANGUAGE RankNTypes #-}
 
-module Codec.Xlsx.Tabulate.Internal where
+module Codec.Xlsx.Tabulate.Render where
 
-import qualified Codec.Xlsx            as X
-import           Control.Lens          ((?~))
-import qualified Control.Lens          as L
-import qualified Data.ByteString.Lazy  as BL
-import           Data.Function         ((&))
-import qualified Data.HashMap.Strict   as HM
-import           Data.Maybe            (fromMaybe)
-import qualified Data.Scientific       as S
-import qualified Data.Text             as T
-import           Data.Time.Clock.POSIX (getPOSIXTime)
-
-
-data SimpleTable = SimpleTable
-  { simpleTableColumns :: !SimpleTableColumns
-  , simpleTableRecords :: ![SimpleTableRecord]
-  } deriving (Show)
-
-
-type SimpleTableColumnKey = T.Text
-
-
-type SimpleTableColumns = [(SimpleTableColumnKey, T.Text)]
-
-
-type SimpleTableRecord = HM.HashMap SimpleTableColumnKey SimpleTableCellValue
-
-
-data SimpleTableCellValue =
-    STCVNone
-  | STCVBool !Bool
-  | STCVDate !T.Text
-  | STCVText !T.Text
-  | STCVNumb !S.Scientific
-  | STCVForm !T.Text
-  deriving (Show)
-
-
-stcvNone :: SimpleTableCellValue
-stcvNone = STCVNone
-
-
-stcvBool :: Bool -> SimpleTableCellValue
-stcvBool = STCVBool
-
-
-stcvDate :: T.Text -> SimpleTableCellValue
-stcvDate = STCVDate
-
-
-stcvText :: T.Text -> SimpleTableCellValue
-stcvText = STCVText
-
-
-stcvNumb :: S.Scientific -> SimpleTableCellValue
-stcvNumb = STCVNumb
-
-
-stcvForm :: T.Text -> SimpleTableCellValue
-stcvForm = STCVForm
+import qualified Codec.Xlsx                as X
+import           Codec.Xlsx.Tabulate.Types
+                 ( SimpleTable(SimpleTable)
+                 , SimpleTableCellValue(..)
+                 , SimpleTableColumns
+                 , SimpleTableRecord
+                 , stcvNone
+                 )
+import           Control.Lens              ((?~))
+import qualified Control.Lens              as L
+import qualified Data.ByteString.Lazy      as BL
+import           Data.Function             ((&))
+import qualified Data.HashMap.Strict       as HM
+import           Data.Maybe                (fromMaybe)
+import qualified Data.Scientific           as S
+import qualified Data.Text                 as T
+import           Data.Time                 (UTCTime(UTCTime))
+import           Data.Time.Clock.POSIX     (getPOSIXTime)
 
 
 render :: SimpleTable -> X.Worksheet -> (X.Worksheet, X.Range)
@@ -96,7 +55,7 @@ renderCell w (r, c, cell) =
   case cell of
     STCVNone     -> w
     (STCVBool x) -> w & X.cellValueAt (r, c) ?~ X.CellBool x
-    (STCVDate x) -> w & X.cellValueAt (r, c) ?~ X.CellText x
+    (STCVDate x) -> w & X.cellValueAt (r, c) ?~ X.CellDouble (X.dateToNumber X.DateBase1900 (UTCTime x 0))
     (STCVText x) -> w & X.cellValueAt (r, c) ?~ X.CellText x
     (STCVNumb x) -> w & X.cellValueAt (r, c) ?~ X.CellDouble (S.toRealFloat x)
     (STCVForm x) -> w & cellFormulaAt (r, c) ?~ X.CellFormula (X.NormalFormula (X.Formula x)) False False
@@ -108,9 +67,8 @@ cellFormulaAt i = X.atCell i . L.non X.def . X.cellFormula
 
 writeTable :: FilePath -> SimpleTable -> IO ()
 writeTable filepath st = do
-  (content, range) <- writeBL st
+  (content, _) <- writeBL st
   BL.writeFile filepath content
-  putStrLn . T.unpack $ "Table range is " <> X.unCellRef range <> "."
 
 
 writeBL :: SimpleTable -> IO (BL.ByteString, X.Range)
@@ -118,11 +76,3 @@ writeBL st = do
   ct <- getPOSIXTime
   let (ws, range) = render st X.def
   pure (X.fromXlsx ct (X.def & X.atSheet "Sheet 1" ?~ ws), range)
-
-
-example :: SimpleTable
-example = SimpleTable
-  [("a", "A"), ("b", "B"), ("e", "E"), ("c", "C")]
-  [ HM.fromList [("a", stcvText "A1"), ("b", stcvText "B1"), ("c", stcvText "C1")]
-  , HM.fromList [("a", stcvText "A2"), ("b", stcvText "B2"), ("c", stcvText "C2")]
-  ]

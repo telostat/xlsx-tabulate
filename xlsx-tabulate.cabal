@@ -26,7 +26,9 @@ source-repository head
 library
   exposed-modules:
       Codec.Xlsx.Tabulate
-      Codec.Xlsx.Tabulate.Internal
+      Codec.Xlsx.Tabulate.Render
+      Codec.Xlsx.Tabulate.RenderFormat
+      Codec.Xlsx.Tabulate.Types
   other-modules:
       Paths_xlsx_tabulate
   hs-source-dirs:
@@ -37,6 +39,7 @@ library
   build-depends:
       base >=4.11 && <5
     , bytestring
+    , containers
     , lens
     , scientific
     , text
@@ -57,6 +60,7 @@ test-suite xlsx-tabulate-doctest
   build-depends:
       base >=4.11 && <5
     , bytestring
+    , containers
     , doctest
     , lens
     , scientific
@@ -78,6 +82,7 @@ test-suite xlsx-tabulate-test
   build-depends:
       base >=4.11 && <5
     , bytestring
+    , containers
     , lens
     , scientific
     , text
