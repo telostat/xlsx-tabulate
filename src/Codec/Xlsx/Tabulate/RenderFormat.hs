@@ -12,12 +12,12 @@ import           Codec.Xlsx.Tabulate.Types
                  , SimpleTableRecord
                  , stcvNone
                  )
-import           Control.Lens              ((?~))
+import           Control.Lens              ((.~), (?~))
 import qualified Control.Lens              as L
 import qualified Data.ByteString.Lazy      as BL
 import           Data.Function             ((&))
 import qualified Data.HashMap.Strict       as HM
-import           Data.Map.Strict           (Map, fromList, union)
+import           Data.Map.Strict           (Map, fromList, insert, union)
 import           Data.Maybe                (fromMaybe)
 import           Data.Scientific           (toRealFloat)
 import qualified Data.Text                 as T
@@ -39,6 +39,27 @@ preformatXY r c (SimpleFormatTable cols fmts recs) =
 
 preformatHeader :: Int -> Int -> SimpleTableColumns -> Map (Int, Int) XF.FormattedCell
 preformatHeader r c cols = fromList (fmap (\(idx, (_, n)) -> ((r, idx), X.def & withValue (X.CellText n))) (zip [c..] cols))
+
+
+preformatWithTitleXY
+  :: Int  -- ^ Row number to put the table at.
+  -> Int  -- ^ Column number to put the table at.
+  -> (XF.FormattedCell -> XF.FormattedCell)  -- ^ Table title formatter.
+  -> T.Text -- ^ Title of the table.
+  -> SimpleFormatTable
+  -> (Map (Int, Int) XF.FormattedCell, X.Range)
+preformatWithTitleXY r c formatter title (SimpleFormatTable cols fmts recs) =
+  let
+    -- Get the table width:
+    width = length cols
+
+    -- Create the title of the table:
+    titleCell = formatter (X.def & withValue (X.CellText title) & XF.formattedColSpan .~ width)
+
+    -- Create the header and contents of the table:
+    (contentCells, nr) = foldl (preformatRecord cols fmts c) (preformatHeader (r + 1) c cols, r + 2) recs
+  in
+    (insert (r, c) titleCell contentCells, X.mkRange (r, c) (nr - 1, length cols))
 
 
 preformatRecord
