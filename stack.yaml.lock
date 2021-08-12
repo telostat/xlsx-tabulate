@@ -3,7 +3,18 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    name: xlsx
+    version: 0.8.4
+    git: https://github.com/vst/xlsx.git
+    pantry-tree:
+      size: 4389
+      sha256: 6b161a766356ac8e4a38e07865b1dcf1f3b89f09d572ebac56a8570082defdba
+    commit: 2de1abd548e9773a1a6a937ebccf6fb261570685
+  original:
+    git: https://github.com/vst/xlsx.git
+    commit: 2de1abd548e9773a1a6a937ebccf6fb261570685
 snapshots:
 - completed:
     size: 585393
