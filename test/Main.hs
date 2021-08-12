@@ -8,6 +8,7 @@ import           Codec.Xlsx.Tabulate  (preformat)
 import qualified Codec.Xlsx.Tabulate  as XT
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.HashMap.Strict  as HM
+import           DebugMergeCells
 
 
 main :: IO ()
@@ -19,6 +20,11 @@ main = do
   let path_formatted = "test/output_formatted.xlsx"
   XT.writeFormatTable path_formatted tableFormatted
   putStrLn ("Output is written to " <> path_formatted)
+
+  let path_formatted2 = "test/output_formatted_2.xlsx"
+  output <- debugMergeCells tableFormatted tableFormatted
+  BL.writeFile path_formatted2 output
+  putStrLn ("Output is written to " <> path_formatted2)
 
 
 tableSimple :: XT.SimpleTable

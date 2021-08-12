@@ -52,6 +52,7 @@ test-suite xlsx-tabulate-doctest
   type: exitcode-stdio-1.0
   main-is: doctest.hs
   other-modules:
+      DebugMergeCells
       Main
       Paths_xlsx_tabulate
   hs-source-dirs:
@@ -75,6 +76,7 @@ test-suite xlsx-tabulate-test
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
+      DebugMergeCells
       Paths_xlsx_tabulate
   hs-source-dirs:
       test
