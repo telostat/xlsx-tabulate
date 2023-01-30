@@ -2,16 +2,16 @@
 
 module DebugMergeCells where
 
-import qualified Codec.Xlsx            as X
-import qualified Codec.Xlsx.Formatted  as XF
-import qualified Codec.Xlsx.Tabulate   as XT
-import           Control.Lens          ((?~))
-import qualified Control.Lens          as L
-import qualified Data.ByteString.Lazy  as BL
-import           Data.Function         ((&))
-import qualified Data.Map.Strict       as HM
-import qualified Data.Text             as T
-import           Data.Time.Clock.POSIX (getPOSIXTime)
+import qualified Codec.Xlsx as X
+import qualified Codec.Xlsx.Formatted as XF
+import qualified Codec.Xlsx.Tabulate as XT
+import Control.Lens ((?~))
+import qualified Control.Lens as L
+import qualified Data.ByteString.Lazy as BL
+import Data.Function ((&))
+import qualified Data.Map.Strict as HM
+import qualified Data.Text as T
+import Data.Time.Clock.POSIX (getPOSIXTime)
 
 
 debugMergeCells :: XT.SimpleFormatTable -> XT.SimpleFormatTable -> IO BL.ByteString
@@ -26,7 +26,6 @@ debugMergeCells sft1 sft2 = do
 
 rcToRC :: HM.Map (Int, Int) XF.FormattedCell -> HM.Map (X.RowIndex, X.ColumnIndex) XF.FormattedCell
 rcToRC x = HM.fromList $ fmap (\((r, c), v) -> ((X.RowIndex r, X.ColumnIndex c), v)) (HM.toList x)
-
 
 -- addHeader
 --   :: Int -- ^ The row to put the header at.

@@ -2,13 +2,13 @@
 
 module Main where
 
-import qualified Codec.Xlsx           as X
+import qualified Codec.Xlsx as X
 import qualified Codec.Xlsx.Formatted as XF
-import           Codec.Xlsx.Tabulate  (preformat)
-import qualified Codec.Xlsx.Tabulate  as XT
+import Codec.Xlsx.Tabulate (preformat)
+import qualified Codec.Xlsx.Tabulate as XT
 import qualified Data.ByteString.Lazy as BL
-import qualified Data.HashMap.Strict  as HM
-import           DebugMergeCells
+import qualified Data.HashMap.Strict as HM
+import DebugMergeCells
 
 
 main :: IO ()
@@ -28,10 +28,11 @@ main = do
 
 
 tableSimple :: XT.SimpleTable
-tableSimple = XT.SimpleTable
-  { XT.simpleTableColumns = columns
-  , XT.simpleTableRecords = fmap HM.fromList records
-  }
+tableSimple =
+  XT.SimpleTable
+    { XT.simpleTableColumns = columns
+    , XT.simpleTableRecords = fmap HM.fromList records
+    }
   where
     columns =
       [ ("name", "Name")
@@ -44,11 +45,12 @@ tableSimple = XT.SimpleTable
 
 
 tableFormatted :: XT.SimpleFormatTable
-tableFormatted = XT.SimpleFormatTable
-  { XT.simpleFormatTableColumns = columns
-  , XT.simpleFormatTableFormats = HM.fromList formats
-  , XT.simpleFormatTableRecords = fmap HM.fromList records
-  }
+tableFormatted =
+  XT.SimpleFormatTable
+    { XT.simpleFormatTableColumns = columns
+    , XT.simpleFormatTableFormats = HM.fromList formats
+    , XT.simpleFormatTableRecords = fmap HM.fromList records
+    }
   where
     columns =
       [ ("name", "Name")

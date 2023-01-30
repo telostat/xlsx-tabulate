@@ -2,24 +2,24 @@
 
 module Codec.Xlsx.Tabulate.Render where
 
-import qualified Codec.Xlsx                as X
-import           Codec.Xlsx.Tabulate.Types
-                 ( SimpleTable(SimpleTable)
-                 , SimpleTableCellValue(..)
-                 , SimpleTableColumns
-                 , SimpleTableRecord
-                 , stcvNone
-                 )
-import           Control.Lens              ((?~))
-import qualified Control.Lens              as L
-import qualified Data.ByteString.Lazy      as BL
-import           Data.Function             ((&))
-import qualified Data.HashMap.Strict       as HM
-import           Data.Maybe                (fromMaybe)
-import qualified Data.Scientific           as S
-import qualified Data.Text                 as T
-import           Data.Time                 (UTCTime(UTCTime))
-import           Data.Time.Clock.POSIX     (getPOSIXTime)
+import qualified Codec.Xlsx as X
+import Codec.Xlsx.Tabulate.Types (
+  SimpleTable (SimpleTable),
+  SimpleTableCellValue (..),
+  SimpleTableColumns,
+  SimpleTableRecord,
+  stcvNone,
+ )
+import Control.Lens ((?~))
+import qualified Control.Lens as L
+import qualified Data.ByteString.Lazy as BL
+import Data.Function ((&))
+import qualified Data.HashMap.Strict as HM
+import Data.Maybe (fromMaybe)
+import qualified Data.Scientific as S
+import qualified Data.Text as T
+import Data.Time (UTCTime (UTCTime))
+import Data.Time.Clock.POSIX (getPOSIXTime)
 
 
 render :: SimpleTable -> X.Worksheet -> (X.Worksheet, X.Range)
@@ -30,7 +30,7 @@ renderXY :: Int -> Int -> SimpleTable -> X.Worksheet -> (X.Worksheet, X.Range)
 renderXY r c (SimpleTable cols recs) w =
   let
     (nw, nr) = foldl (renderRecord cols c) (renderHeader w r c cols, r + 1) recs
-  in
+   in
     (nw, X.mkRange (X.RowIndex r, X.ColumnIndex c) (X.RowIndex (nr - 1), X.ColumnIndex (length cols)))
 
 
@@ -44,16 +44,16 @@ renderHeader w r c cols = fst $ foldl go (w, c) cols
 renderRecord :: SimpleTableColumns -> Int -> (X.Worksheet, Int) -> SimpleTableRecord -> (X.Worksheet, Int)
 renderRecord cols c (w, r) record =
   let
-    cells = zip3 (repeat r) [c..] $ fromMaybe stcvNone . flip HM.lookup record <$> fmap fst cols
+    cells = zip3 (repeat r) [c ..] $ fromMaybe stcvNone . flip HM.lookup record <$> fmap fst cols
     nw = foldl renderCell w cells
-  in
+   in
     (nw, r + 1)
 
 
 renderCell :: X.Worksheet -> (Int, Int, SimpleTableCellValue) -> X.Worksheet
 renderCell w (r, c, cell) =
   case cell of
-    STCVNone     -> w
+    STCVNone -> w
     (STCVBool x) -> w & X.cellValueAt (X.RowIndex r, X.ColumnIndex c) ?~ X.CellBool x
     (STCVDate x) -> w & X.cellValueAt (X.RowIndex r, X.ColumnIndex c) ?~ X.CellDouble (X.dateToNumber X.DateBase1900 (UTCTime x 0))
     (STCVText x) -> w & X.cellValueAt (X.RowIndex r, X.ColumnIndex c) ?~ X.CellText x

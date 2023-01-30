@@ -2,27 +2,27 @@
 
 module Codec.Xlsx.Tabulate.RenderFormat where
 
-import qualified Codec.Xlsx                as X
-import qualified Codec.Xlsx.Formatted      as XF
-import           Codec.Xlsx.Tabulate.Types
-                 ( SimpleFormatTable(SimpleFormatTable)
-                 , SimpleTableCellValue(..)
-                 , SimpleTableColumns
-                 , SimpleTableFormats
-                 , SimpleTableRecord
-                 , stcvNone
-                 )
-import           Control.Lens              ((.~), (?~))
-import qualified Control.Lens              as L
-import qualified Data.ByteString.Lazy      as BL
-import           Data.Function             ((&))
-import qualified Data.HashMap.Strict       as HM
-import           Data.Map.Strict           (Map, fromList, insert, toList, union)
-import           Data.Maybe                (fromMaybe)
-import           Data.Scientific           (toRealFloat)
-import qualified Data.Text                 as T
-import           Data.Time                 (UTCTime(UTCTime))
-import           Data.Time.Clock.POSIX     (getPOSIXTime)
+import qualified Codec.Xlsx as X
+import qualified Codec.Xlsx.Formatted as XF
+import Codec.Xlsx.Tabulate.Types (
+  SimpleFormatTable (SimpleFormatTable),
+  SimpleTableCellValue (..),
+  SimpleTableColumns,
+  SimpleTableFormats,
+  SimpleTableRecord,
+  stcvNone,
+ )
+import Control.Lens ((.~), (?~))
+import qualified Control.Lens as L
+import qualified Data.ByteString.Lazy as BL
+import Data.Function ((&))
+import qualified Data.HashMap.Strict as HM
+import Data.Map.Strict (Map, fromList, insert, toList, union)
+import Data.Maybe (fromMaybe)
+import Data.Scientific (toRealFloat)
+import qualified Data.Text as T
+import Data.Time (UTCTime (UTCTime))
+import Data.Time.Clock.POSIX (getPOSIXTime)
 
 
 preformat :: SimpleFormatTable -> (Map (Int, Int) XF.FormattedCell, X.Range)
@@ -38,14 +38,18 @@ preformatXY r c (SimpleFormatTable cols fmts recs) =
 
 
 preformatHeader :: Int -> Int -> SimpleTableColumns -> Map (Int, Int) XF.FormattedCell
-preformatHeader r c cols = fromList (fmap (\(idx, (_, n)) -> ((r, idx), X.def & withValue (X.CellText n))) (zip [c..] cols))
+preformatHeader r c cols = fromList (fmap (\(idx, (_, n)) -> ((r, idx), X.def & withValue (X.CellText n))) (zip [c ..] cols))
 
 
 preformatWithTitleXY
-  :: Int  -- ^ Row number to put the table at.
-  -> Int  -- ^ Column number to put the table at.
-  -> (XF.FormattedCell -> XF.FormattedCell)  -- ^ Table title formatter.
-  -> T.Text -- ^ Title of the table.
+  :: Int
+  -- ^ Row number to put the table at.
+  -> Int
+  -- ^ Column number to put the table at.
+  -> (XF.FormattedCell -> XF.FormattedCell)
+  -- ^ Table title formatter.
+  -> T.Text
+  -- ^ Title of the table.
   -> SimpleFormatTable
   -> (Map (Int, Int) XF.FormattedCell, X.Range)
 preformatWithTitleXY r c formatter title (SimpleFormatTable cols fmts recs) =
@@ -72,16 +76,17 @@ preformatRecord
 preformatRecord cols fmts c (sofar, r) record =
   let
     cvals = fmap (fromMaybe stcvNone . flip HM.lookup record . fst) cols
-    cfmts = fmap (fromMaybe id       . flip HM.lookup fmts   . fst) cols
-    cindx = fmap (r, ) [c..]
+    cfmts = fmap (fromMaybe id . flip HM.lookup fmts . fst) cols
+    cindx = fmap (r,) [c ..]
     ccont = fmap (\(idx, fmt, val) -> (idx, X.def & withCellValue val & fmt)) (zip3 cindx cfmts cvals)
-  in
+   in
     (sofar `union` fromList ccont, r + 1)
 
 
 -- * Helpers
--- &helpers
 
+
+-- &helpers
 
 withValue :: X.CellValue -> XF.FormattedCell -> XF.FormattedCell
 withValue x = XF.formattedCell . X.cellValue ?~ x
@@ -92,7 +97,7 @@ withFormula x = XF.formattedCell . X.cellFormula ?~ x
 
 
 withCellValue :: SimpleTableCellValue -> XF.FormattedCell -> XF.FormattedCell
-withCellValue STCVNone     = id
+withCellValue STCVNone = id
 withCellValue (STCVBool x) = withValue (X.CellBool x)
 withCellValue (STCVDate x) = withValue (X.CellDouble (X.dateToNumber X.DateBase1900 (UTCTime x 0)))
 withCellValue (STCVText x) = withValue (X.CellText x)
@@ -105,7 +110,7 @@ withFmtNumb fmt = XF.formattedFormat . XF.formatNumberFormat ?~ X.UserNumberForm
 
 
 withFmtText :: XF.FormattedCell -> XF.FormattedCell
-withFmtText = XF.formattedFormat . XF.formatNumberFormat ?~ X.StdNumberFormat X.NfTextPlaceHolder  -- @
+withFmtText = XF.formattedFormat . XF.formatNumberFormat ?~ X.StdNumberFormat X.NfTextPlaceHolder
 
 
 withFmtDate :: T.Text -> XF.FormattedCell -> XF.FormattedCell

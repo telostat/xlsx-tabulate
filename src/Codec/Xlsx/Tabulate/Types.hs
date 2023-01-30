@@ -3,16 +3,17 @@
 module Codec.Xlsx.Tabulate.Types where
 
 import qualified Codec.Xlsx.Formatted as XF
-import qualified Data.HashMap.Strict  as HM
-import qualified Data.Scientific      as S
-import qualified Data.Text            as T
-import           Data.Time            (Day)
+import qualified Data.HashMap.Strict as HM
+import qualified Data.Scientific as S
+import qualified Data.Text as T
+import Data.Time (Day)
 
 
 data SimpleTable = SimpleTable
   { simpleTableColumns :: !SimpleTableColumns
   , simpleTableRecords :: ![SimpleTableRecord]
-  } deriving (Show)
+  }
+  deriving (Show)
 
 
 data SimpleFormatTable = SimpleFormatTable
@@ -34,8 +35,8 @@ type SimpleTableFormats = HM.HashMap SimpleTableColumnKey (XF.FormattedCell -> X
 type SimpleTableRecord = HM.HashMap SimpleTableColumnKey SimpleTableCellValue
 
 
-data SimpleTableCellValue =
-    STCVNone
+data SimpleTableCellValue
+  = STCVNone
   | STCVBool !Bool
   | STCVDate !Day
   | STCVText !T.Text
