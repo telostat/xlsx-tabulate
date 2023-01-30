@@ -2,13 +2,10 @@
 
 module Main where
 
-import qualified Codec.Xlsx as X
-import qualified Codec.Xlsx.Formatted as XF
-import Codec.Xlsx.Tabulate (preformat)
 import qualified Codec.Xlsx.Tabulate as XT
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.HashMap.Strict as HM
-import DebugMergeCells
+import DebugMergeCells (debugMergeCells)
 
 
 main :: IO ()
