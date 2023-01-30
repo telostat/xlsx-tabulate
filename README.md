@@ -4,8 +4,8 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/telostat/xlsx-tabulate)
 ![GitHub](https://img.shields.io/github/license/telostat/xlsx-tabulate)
 
-> **Note:** This application is under development and of prototype quality at
-> the moment. Expect significant breaking changes without notification until we
+> **Note:** This library is under development and of prototype quality at the
+> moment. Expect significant breaking changes without notification until we
 > reach the first minor version. Until then, we will keep bumping the patch
 > version.
 
@@ -15,6 +15,6 @@ add tables to XLSX worksheets conveniently. It is based on
 
 ## License
 
-Copyright Telostat Pte Ltd (c) 2021.
+Copyright Telostat Pte Ltd (c) 2021-2023.
 
 This work is licensed under MIT license. See [LICENSE](./LICENSE).
