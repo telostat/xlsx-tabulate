@@ -33,8 +33,6 @@ library
       Paths_xlsx_tabulate
   hs-source-dirs:
       src
-  default-extensions:
-      OverloadedStrings
   ghc-options: -Wall -Werror -Wunused-packages
   build-depends:
       base >=4.11 && <5

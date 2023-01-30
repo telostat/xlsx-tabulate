@@ -75,4 +75,4 @@ writeBL :: SimpleTable -> IO (BL.ByteString, X.Range)
 writeBL st = do
   ct <- getPOSIXTime
   let (ws, range) = render st X.def
-  pure (X.fromXlsx ct (X.def & X.atSheet "Sheet 1" ?~ ws), range)
+  pure (X.fromXlsx ct (X.def & X.atSheet (T.pack "Sheet 1") ?~ ws), range)

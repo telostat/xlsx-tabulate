@@ -141,7 +141,7 @@ writeFormatBL :: SimpleFormatTable -> IO BL.ByteString
 writeFormatBL st = do
   ct <- getPOSIXTime
   let (cellmap, _) = preformat st
-  let xlsx = XF.formatWorkbook [("Sheet 1", rcToRC cellmap)] X.minimalStyleSheet
+  let xlsx = XF.formatWorkbook [(T.pack "Sheet 1", rcToRC cellmap)] X.minimalStyleSheet
   pure (X.fromXlsx ct xlsx)
 
 

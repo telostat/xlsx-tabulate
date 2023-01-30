@@ -21,8 +21,6 @@ library:
     - -Wall
     - -Werror
     - -Wunused-packages
-  default-extensions:
-    - OverloadedStrings
   dependencies:
     - bytestring
     - containers
