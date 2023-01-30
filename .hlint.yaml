@@ -23,7 +23,6 @@
   - {name: Data.Text.Lazy, as: TL }
   - {name: Data.Text.Encoding, as: TE }
   - {name: Data.Time, as: Time }
-  - {name: System.Random, as: Random }
 
 ##########################
 # EXTENSION RESTRICTIONS #
@@ -32,11 +31,9 @@
 - extensions:
   - default: false # All extension are banned by default
   - name: # Only these listed extensions can be used
-      - DeriveGeneric
-      - GADTs
       - OverloadedStrings
       - RankNTypes
-      - TemplateHaskell
+      - TupleSections
 
 ################
 # CUSTOM RULES #
