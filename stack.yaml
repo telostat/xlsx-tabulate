@@ -1,6 +1,0 @@
-resolver: lts-18.0
-packages:
-- .
-extra-deps:
-- git: https://github.com/vst/xlsx.git
-  commit: 2de1abd548e9773a1a6a937ebccf6fb261570685
