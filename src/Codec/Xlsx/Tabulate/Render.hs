@@ -31,14 +31,14 @@ renderXY r c (SimpleTable cols recs) w =
   let
     (nw, nr) = foldl (renderRecord cols c) (renderHeader w r c cols, r + 1) recs
   in
-    (nw, X.mkRange (r, c) (nr - 1, length cols))
+    (nw, X.mkRange (X.RowIndex r, X.ColumnIndex c) (X.RowIndex (nr - 1), X.ColumnIndex (length cols)))
 
 
 renderHeader :: X.Worksheet -> Int -> Int -> SimpleTableColumns -> X.Worksheet
 renderHeader w r c cols = fst $ foldl go (w, c) cols
   where
     go :: (X.Worksheet, Int) -> (T.Text, T.Text) -> (X.Worksheet, Int)
-    go (wx, cx) (_, x) = (wx & X.cellValueAt (r, cx) ?~ X.CellText x, cx + 1)
+    go (wx, cx) (_, x) = (wx & X.cellValueAt (X.RowIndex r, X.ColumnIndex cx) ?~ X.CellText x, cx + 1)
 
 
 renderRecord :: SimpleTableColumns -> Int -> (X.Worksheet, Int) -> SimpleTableRecord -> (X.Worksheet, Int)
@@ -54,15 +54,15 @@ renderCell :: X.Worksheet -> (Int, Int, SimpleTableCellValue) -> X.Worksheet
 renderCell w (r, c, cell) =
   case cell of
     STCVNone     -> w
-    (STCVBool x) -> w & X.cellValueAt (r, c) ?~ X.CellBool x
-    (STCVDate x) -> w & X.cellValueAt (r, c) ?~ X.CellDouble (X.dateToNumber X.DateBase1900 (UTCTime x 0))
-    (STCVText x) -> w & X.cellValueAt (r, c) ?~ X.CellText x
-    (STCVNumb x) -> w & X.cellValueAt (r, c) ?~ X.CellDouble (S.toRealFloat x)
+    (STCVBool x) -> w & X.cellValueAt (X.RowIndex r, X.ColumnIndex c) ?~ X.CellBool x
+    (STCVDate x) -> w & X.cellValueAt (X.RowIndex r, X.ColumnIndex c) ?~ X.CellDouble (X.dateToNumber X.DateBase1900 (UTCTime x 0))
+    (STCVText x) -> w & X.cellValueAt (X.RowIndex r, X.ColumnIndex c) ?~ X.CellText x
+    (STCVNumb x) -> w & X.cellValueAt (X.RowIndex r, X.ColumnIndex c) ?~ X.CellDouble (S.toRealFloat x)
     (STCVForm x) -> w & cellFormulaAt (r, c) ?~ X.CellFormula (X.NormalFormula (X.Formula x)) False False
 
 
 cellFormulaAt :: (Int, Int) -> L.Lens' X.Worksheet (Maybe X.CellFormula)
-cellFormulaAt i = X.atCell i . L.non X.def . X.cellFormula
+cellFormulaAt (r, c) = X.atCell (X.RowIndex r, X.ColumnIndex c) . L.non X.def . X.cellFormula
 
 
 writeTable :: FilePath -> SimpleTable -> IO ()

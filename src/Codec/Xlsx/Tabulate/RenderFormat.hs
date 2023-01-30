@@ -17,7 +17,7 @@ import qualified Control.Lens              as L
 import qualified Data.ByteString.Lazy      as BL
 import           Data.Function             ((&))
 import qualified Data.HashMap.Strict       as HM
-import           Data.Map.Strict           (Map, fromList, insert, union)
+import           Data.Map.Strict           (Map, fromList, insert, toList, union)
 import           Data.Maybe                (fromMaybe)
 import           Data.Scientific           (toRealFloat)
 import qualified Data.Text                 as T
@@ -33,8 +33,8 @@ preformatXY :: Int -> Int -> SimpleFormatTable -> (Map (Int, Int) XF.FormattedCe
 preformatXY r c (SimpleFormatTable cols fmts recs) =
   let
     (res, nr) = foldl (preformatRecord cols fmts c) (preformatHeader r c cols, r + 1) recs
-  in
-    (res, X.mkRange (r, c) (nr - 1, length cols))
+   in
+    (res, X.mkRange (X.RowIndex r, X.ColumnIndex c) (X.RowIndex (nr - 1), X.ColumnIndex (length cols)))
 
 
 preformatHeader :: Int -> Int -> SimpleTableColumns -> Map (Int, Int) XF.FormattedCell
@@ -58,8 +58,8 @@ preformatWithTitleXY r c formatter title (SimpleFormatTable cols fmts recs) =
 
     -- Create the header and contents of the table:
     (contentCells, nr) = foldl (preformatRecord cols fmts c) (preformatHeader (r + 1) c cols, r + 2) recs
-  in
-    (insert (r, c) titleCell contentCells, X.mkRange (r, c) (nr - 1, length cols))
+   in
+    (insert (r, c) titleCell contentCells, X.mkRange (X.RowIndex r, X.ColumnIndex c) (X.RowIndex (nr - 1), X.ColumnIndex (length cols)))
 
 
 preformatRecord
@@ -136,5 +136,9 @@ writeFormatBL :: SimpleFormatTable -> IO BL.ByteString
 writeFormatBL st = do
   ct <- getPOSIXTime
   let (cellmap, _) = preformat st
-  let xlsx = XF.formatWorkbook [("Sheet 1", cellmap)] X.minimalStyleSheet
+  let xlsx = XF.formatWorkbook [("Sheet 1", rcToRC cellmap)] X.minimalStyleSheet
   pure (X.fromXlsx ct xlsx)
+
+
+rcToRC :: Map (Int, Int) XF.FormattedCell -> Map (X.RowIndex, X.ColumnIndex) XF.FormattedCell
+rcToRC x = fromList $ fmap (\((r, c), v) -> ((X.RowIndex r, X.ColumnIndex c), v)) (toList x)

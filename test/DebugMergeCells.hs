@@ -19,9 +19,13 @@ debugMergeCells sft1 sft2 = do
   ct <- getPOSIXTime
   let (fcm1, range) = XT.preformatWithTitleXY 1 1 id "Deneme1" sft1
   let (fcm2, range) = XT.preformatWithTitleXY 20 1 id "Deneme2" sft2
-  let xlsx = XF.formatWorkbook [("Sheet 1", fcm1), ("Sheet 2", fcm2)] X.minimalStyleSheet
+  let xlsx = XF.formatWorkbook [("Sheet 1", rcToRC fcm1), ("Sheet 2", rcToRC fcm2)] X.minimalStyleSheet
   print xlsx
   pure (X.fromXlsx ct xlsx)
+
+
+rcToRC :: HM.Map (Int, Int) XF.FormattedCell -> HM.Map (X.RowIndex, X.ColumnIndex) XF.FormattedCell
+rcToRC x = HM.fromList $ fmap (\((r, c), v) -> ((X.RowIndex r, X.ColumnIndex c), v)) (HM.toList x)
 
 
 -- addHeader
