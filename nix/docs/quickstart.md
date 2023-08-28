@@ -1,48 +1,40 @@
 # Welcome to XLSX Tabulate Development Shell
 
-XLSX Tabulate development shell is provisioned via a Nix shell and it is
-provided for developers to conveniently develop, test and release XLSX Tabulate.
+XLSX Tabulate development shell is provisioned via a Nix and it is provided for
+developers to conveniently develop, test and release XLSX Tabulate.
 
 ## Useful Commands
 
-Perform an unoptimized, development build:
+See welcome message:
 
 ```sh
-devsh exec build
+devsh-welcome
 ```
 
-Run tests:
+See the rendered version of this document:
 
 ```sh
-devsh exec test
+devsh-help
 ```
 
-Run linters:
+Re-generate project `.cabal` file, format codebase, run `hlint`, build and test at once:
 
 ```sh
-devsh exec lint
+devsh-makedev
 ```
 
-Format the codebase:
+... or respectively:
 
 ```sh
-devsh exec format
+hpack
+fourmolu -i src/ test/
+hlint src/ test/
+cabal build -O0
+cabal v1-test
 ```
 
-Build Haskell documentation:
+Run `haddock`:
 
 ```sh
-devsh exec haddock
-```
-
-Show devshell extensions:
-
-```sh
-devsh exec
-```
-
-For further help:
-
-```sh
-devsh guide
+cabal haddock -O0
 ```
